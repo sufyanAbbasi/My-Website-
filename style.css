@@ -1,3 +1,22 @@
 body {
-	background-color: gray;
+	background-color: #202020;
+	/*background: webkit-linear-gradient(top, black, #404040); */
+}
+
+#circle-container {
+
+	position: absolute;
+	height: 95%;
+	margin: auto;
+  	transform: translateY(-50%) translateX(-50%);
+  	top: 50%; 
+  	left: 50%;
+}
+
+.circle {
+
+	background-color: #cbcbcb; 
+	position: relative;
+	height: 100%;
+	border-radius: 50%; 
 }
