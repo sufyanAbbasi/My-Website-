@@ -1,24 +1,86 @@
 <!doctype html>
 <html lang="en">
+<style type="text/css">
+
+	body {
+		background-color: #202020;
+		/*background: webkit-linear-gradient(top, black, #404040); */
+		font-size: 43px;
+	}
+
+	#circle-container {
+
+		position: absolute;
+		height: 95%;
+		margin: auto;
+	  	transform: translateY(-50%) translateX(-50%);
+	  	top: 50%; 
+	  	left: 50%;
+	}
+
+	.circle {
+		position: relative;
+		height: 100%;
+		border-radius: 50%; 
+	}
+
+	#outer{
+		background-color: #cbcbcb; 
+	}
+
+	#inner{
+		background-color: #202020;
+	}
+
+</style>
 
 <head>
 
 	<title>Sufyan's Website</title>
-	<link rel="stylesheet" type="text/css" href="style.css">
-
+	
 </head>
 
 <body onload="init()">
 
 	<div id="circle-container">
-		
-		<div class="circle"></div>
+		<div class="circle" id="outer">
+			
+			<div id="circle-container">
+				<div class="circle" id="inner"></div>
+			</div>
 
+		</div>
 	</div>
 	
 
+<script type="text/javascript">
+	
+	function init() {
+
+		$('body').css('font-size', 43 * $(window).height()/725);
+
+		var circleWidth = $('#circle-container').height(); 
+
+		$('.circle').css('width', circleWidth); 
+
+		$(window).on('resize', function(){
+
+		circleWidth = $('#circle-container').height(); 
+		$('.circle').css('width', circleWidth); 
+
+		$('body').css('font-size', 43 * $(this).height()/725);
+
+
+
+	})
+}
+
+</script>
+
 <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="script.js"></script>
+
+<script type="text/javascript" src="raf.js"></script>
+
 </body>
 
 </html>
