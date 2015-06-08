@@ -4,8 +4,16 @@
 
 	body {
 		background-color: #202020;
-		/*background: webkit-linear-gradient(top, black, #404040); */
 		font-size: 43px;
+	}
+
+	.module{
+		position: relative;
+		height: calc(95vh);
+		width: calc(95vh);
+		transform: translateX(-50%);
+	  	margin-top: 10px;
+	  	left: 50%;
 	}
 
 	#circle-container {
@@ -25,12 +33,23 @@
 	}
 
 	#outer{
-		background-color: #cbcbcb; 
+		background-color: rgba(0,255,156,.8); 
+		border: solid 30px rgba(255,255,255,.95);
 	}
 
 	#inner{
 		background-color: #202020;
 	}
+
+	p {
+		color: white;
+		position: absolute;
+		transform: translateY(-50%) translateX(-50%);
+	  	top: 35%; 
+	  	left: 50%;
+	  	font-size: 2em;
+	}
+
 
 </style>
 
@@ -42,16 +61,29 @@
 
 <body onload="init()">
 
+<div class = "module">
 	<div id="circle-container">
 		<div class="circle" id="outer">
 			
 			<div id="circle-container">
 				<div class="circle" id="inner"></div>
 			</div>
-
+			<p> Welcome! </p>
 		</div>
 	</div>
-	
+</div>
+
+
+
+<div class = "module">
+	<div>
+		
+
+
+
+	</div>
+
+</div>
 
 <script type="text/javascript">
 	
@@ -65,14 +97,24 @@
 
 		$(window).on('resize', function(){
 
-		circleWidth = $('#circle-container').height(); 
-		$('.circle').css('width', circleWidth); 
+			circleWidth = $('#circle-container').height(); 
+			$('.circle').css('width', circleWidth); 
 
-		$('body').css('font-size', 43 * $(this).height()/725);
+			$('body').css('font-size', 43 * $(this).height()/725);
+
+		})
 
 
+		var degree = 0; 
+		function loop(){
+			degree += .25; 
+			var jitter = Math.random() - Math.random(); 
+			$('#inner').css("transform", "perspective(3000px) rotateZ(" + degree + "deg)"); 
+			$('p').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
+			requestAnimationFrame(loop);
+		}
 
-	})
+		requestAnimationFrame(loop);
 }
 
 </script>
