@@ -75,8 +75,9 @@
 
 
 
-<div class = "module">
-	<div>
+<div class = "module"></div>
+
+<div class = "module"></div>
 		
 
 
@@ -102,15 +103,43 @@
 
 			$('body').css('font-size', 43 * $(this).height()/725);
 
-		})
-
+		});
 
 		var degree = 0; 
+		var prevScroll = 0; 
+		var clockwise = true; 
+		var inbound = true; 
+		$(window).scroll(function(){
+			var currentScroll = $(window).scrollTop(); 
+			var moduleHeight = $('.module').height(); 
+			var moduleMargin = parseInt($('.module').css('margin-top')) + 10; 
+			if (currentScroll>=prevScroll && currentScroll<moduleHeight + moduleMargin){
+				inbound = true; 
+				degree += 1;
+				prevScroll = currentScroll; 
+				clockwise = true; 
+			}else if(currentScroll<=prevScroll && currentScroll<moduleHeight + moduleMargin){
+				inbound = true; 
+				degree -= 1; 
+				prevScroll = currentScroll;
+				clockwise = false; 
+			}else {inbound = false;};
+		});
+
+
+
 		function loop(){
-			degree += .25; 
-			var jitter = Math.random() - Math.random(); 
-			$('#inner').css("transform", "perspective(3000px) rotateZ(" + degree + "deg)"); 
-			$('p').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
+			if (inbound){
+				if(clockwise){
+					degree += .4; 
+				}else {
+					degree -= .4; 
+				};
+				var jitter = Math.random() - Math.random(); 
+				$('#inner').css("transform", "perspective(3000px) rotateZ(" + degree + "deg)"); 
+				$('p').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
+			}
+		
 			requestAnimationFrame(loop);
 		}
 
