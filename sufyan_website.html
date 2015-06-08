@@ -127,8 +127,12 @@
 		});
 
 
-
+		var pageOpacity = 0; 
 		function loop(){
+			if (pageOpacity != 1) {
+				pageOpacity += .01
+				$('body').css("opacity", pageOpacity); 
+			};
 			if (inbound){
 				if(clockwise){
 					degree += .4; 
