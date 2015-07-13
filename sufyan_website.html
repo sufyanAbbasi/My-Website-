@@ -54,12 +54,24 @@
 	}
 
 	p {
-		color: white;
 		position: absolute;
+		color: white;
 		transform: translateY(-50%) translateX(-50%);
+	}
+
+	#first p{
 	  	top: 35%; 
 	  	left: 50%;
 	  	font-size: 2em;
+	}
+
+	#second p{
+		font-size: .7em;
+		width: 90%;
+		height: 90%;
+		top: 50%;
+		left: 50%;
+		margin-top: 60px;
 	}
 
 	.header{
@@ -69,8 +81,10 @@
 		overflow:;
 		height: 55px;
 		width: 100%;
+		left: 0px;
 		background-color: rgba(255,255,255,.2);
 		text-indent: 5px;
+		opacity: 1;
 		
 	}
 
@@ -98,16 +112,22 @@
 </div>
 
 
-
 <div class = "module" id = "second">
-	<div class = "header">About Me</div> 
+	<div class = "header" id="num2">About Me</div> 
+	<p>Hello! My name is Sufyan Abbasi and Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit dignissimos praesentium iusto debitis pariatur quasi velit provident, ratione distinctio qui perspiciatis incidunt asperiores vel non, molestiae, quae nam consequatur! Rerum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde laborum consequatur tempore ad incidunt odit, alias, sequi sint, sed necessitatibus laboriosam eligendi dolorum nisi voluptatem quo molestias praesentium nam facere.</p>
 </div>
 
 <div class = "module" id = "third">
-<!-- 	<div class = "header">Projects</div>  -->
+	<div class = "header" id="num3">Projects</div> 
 </div>
 
 <script type="text/javascript">
+
+/*
+* Notes: 
+*   - Bind translationX and opacity to data attribute of the tags 
+*   - Or even better write the functions to modify those css attributes instead of the global variable
+*/
 	
 	function init() {
 
@@ -119,7 +139,10 @@
 
 		$(window).on('resize', function(){
 
+			
+
 			circleWidth = $('#circle-container').height(); 
+			
 			$('.circle').css('width', circleWidth); 
 
 			$('body').css('font-size', 43 * $(this).height()/725);
@@ -146,7 +169,7 @@
 			}else if(translationX > 200){
 				translationX = 200; 
 			}
-			console.log(translationX);
+			
 		}
 
 		function inModuleBound($tag){
@@ -154,6 +177,10 @@
 			var module2Bottom = module2Top + $($tag).height();
 			var headerHeight = $('.header').height(); 
 			return (currentScroll >= module2Top && currentScroll <= module2Bottom - headerHeight)
+		}
+
+		function outOfView($tag){
+			return $($tag).offset().top > currentScroll + $(window).height() || $($tag).offset().top + $($tag).height() < currentScroll;
 		}
 
 		function stickToTop($tag){
@@ -170,12 +197,12 @@
 			$($tag).prependTo($location).css({
 												'width' : "100%",
 												'position' : 'absolute',
-												'left' : '0px',
+												'left' : "0px",
 												'top' : '0px', 
 											})
 		}
 
-		function unSticktoBottom($tag, $location){
+		function sticktoBottom($tag, $location){
 			$($tag).prependTo($location).css({
 												'width' : "100%",
 												'position' : 'absolute',
@@ -200,7 +227,8 @@
 			inbound = false; 
 			currentScroll = $(window).scrollTop(); 
 			var currentIndex = parseInt(1.5 * currentScroll / (moduleHeight + moduleMargin)); 
-			console.log(currentIndex);
+			console.log(translationX, opacity, currentIndex);
+
 			var isScrollingDown = currentScroll>=prevScroll; 
 			var isScrollingUp = currentScroll<= prevScroll; 
 
@@ -210,6 +238,7 @@
 						inbound = true; 
 						degree += 1; 
 						clockwise = true;
+						if (outOfView($('#second'))){translationX = 200; opacity = 0;}
 						break;
 					case 1:
 						inbound = true;  
@@ -218,25 +247,29 @@
 						incrementTranslationX(-1);  
 						incrementOpacity(.1); 
 						if(inModuleBound($("#second"))){
-							console.log("In Module 2 Bound.")
-							stickToTop($('#second .header')); 
+							stickToTop($('#num2')); 
+							translationX = 0;
 						}
 						break;
 					case 2:
 						incrementOpacity(-.01); 
 						incrementTranslationX(-1); 
 						if(inModuleBound($("#second"))){
-							console.log("In Module 2 Bound.")
+							
 						}else{
-							unSticktoBottom($('body .header'), $('#second')); 
+							sticktoBottom($('#num2'), $('#second')); 
+							opacity = 1;
 						};
 						break;
 					case 3: 
-						if(inModuleBound($("#second"))){
-							console.log("In Module 2 Bound.")
-						}else{
-							unSticktoBottom($('body .header'), $('#second')); 
+						incrementOpacity(-.01); 
+						
+						if(!inModuleBound($("#second"))){
+							sticktoBottom($('#num2'), $('#second')); 
+							opacity = 1;
+							incrementTranslationX(1.5);
 						};
+
 						break;
 				}
 			}else if(isScrollingUp){
@@ -247,37 +280,42 @@
 						clockwise = false;
 						incrementTranslationX(1); 
 						incrementOpacity(-.03); 
+						if (outOfView($('#second'))){translationX = 200; opacity = 0;}
 						break; 
 					case 1:
 						incrementOpacity(.25); 
 						if(inModuleBound($("#second"))){
-							console.log("In Module 2 Bound.")
+							
 						}else{
-							unSticktoTop($('body .header'), $('#second')); 
+							unSticktoTop($('#num2'), $('#second')); 
 						};
 						break;
 					case 2:
 						incrementOpacity(.25); 
+
 						$('#second').css('opacity', opacity);
-						if(inModuleBound($("#second"))){
-							console.log("In Module 2 Bound.")
-						} 
 						break; 
 					case 3:
 						if(inModuleBound($("#second"))){
-							console.log("In Module 2 Bound.")
-							stickToTop($('#second .header')); 
+							stickToTop($('#num2'));
+							translationX = 0; 
 						}
+						incrementTranslationX(-1);
 						break;
 				}
 			}
 
 			prevScroll = currentScroll; 
-			$(".header").css({
-								'transform' : 'translateX(' + translationX + '%)',
+			$("#num2").css('transform','translateX(' + translationX + '%)'); 
+			$('#second').css('opacity', opacity);
+			
+			$("#num3").css({
+								'transform' : 'translateX(' + 200 - translationX + '%)',
 								'opacity' :  opacity, 
 							}); 
-			$('#second').css('opacity', opacity);
+
+			$('#third').css('opacity', opacity);
+
 		});
 
 
@@ -295,7 +333,7 @@
 				};
 				var jitter = Math.random() - Math.random(); 
 				$('#inner').css("transform", "perspective(3000px) rotateZ(" + degree + "deg)"); 
-				$('p').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
+				$('#first p').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
 			}
 		
 			requestAnimationFrame(loop);
