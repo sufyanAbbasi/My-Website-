@@ -12,10 +12,11 @@
 		transform: translateX(-50%);
 	  	margin-top: 150px;
 	  	left: 50%;
+	  	opacity: 0; 
 	  	overflow: hidden;
 	}
 
-	.greeter{
+	#first{
 		background-color: #202020; 
 		margin-top: 0px;
 		opacity: 1; 
@@ -23,7 +24,8 @@
 	}
 
 
-	.circle-container {
+	#circle-container {
+
 		position: absolute;
 		height: 95%;
 		margin: auto;
@@ -38,12 +40,12 @@
 		border-radius: 50%; 
 	}
 
-	.outer{
+	#outer{
 		background-color: rgba(0,255,156,.8); 
 		border: solid 30px rgba(255,255,255,.95);
 	}
 
-	.inner{
+	#inner{
 		background-color: #202020;
 	}
 
@@ -53,13 +55,13 @@
 		transform: translateY(-50%) translateX(-50%);
 	}
 
-	.greeter p{
+	#first p{
 	  	top: 35%; 
 	  	left: 50%;
 	  	font-size: 2em;
 	}
 
-	.info p{
+	#second p{
 		font-size: .7em;
 		width: 90%;
 		height: 90%;
@@ -75,7 +77,9 @@
 		overflow:;
 		height: 55px;
 		width: 100%;
+		left: 0px;
 		background-color: rgba(255,255,255,.2);
 		text-indent: 5px;
+		opacity: 1;
 		
 	}
