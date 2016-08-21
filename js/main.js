@@ -1,274 +1,178 @@
 
-/*
-* Notes: 
-*   - Bind translationX and opacity to data attribute of the tags 
-*   - Or even better write the functions to modify those css attributes instead of the global variable
-*/
-	
-function init() {
+var dictionary = {
+	type: {
+		'circle' : {
+					html : '<div class="outer circle-container">' + 
+			                	'<div class="outer circle">' +
+				                    '<div class="inner circle-container">' +
+				                        '<div class="inner circle"></div>' +
+				                    '</div>' +
+			                    	'<p class="title"></p>' +
+			                	'</div>' +
+			            	'</div>',
+		},
+		'info-block' : {
+						html : 
+								'<div class="info-container">' +
+									'<div class="header title"></div>' +
+									'<p class="content"></p>' + 
+								'</div>',
+		}
+	},
+	modules: [],
+}
 
-	$('body').css('font-size', 43 * $(window).height()/725);
+var animation = {
+	currentScroll: 0,
+	prevScroll: 0,
+}
 
-	var circleWidth = $('#circle-container').height(); 
+Number.prototype.clamp = function(min, max) {
+  return Math.min(Math.max(this, min), max);
+};
 
-	$('.circle').css('width', circleWidth); 
+// ~~~~~~~~~~~~~~~~~~~~ MODULE CLASS ~~~~~~~~~~~~~~~~~~~~
+
+function Module($module, data){
+	this.$module = $module;
+	this.type = data.type || ""; 
+	this.title = data.title || ""; 
+	this.content = data.content || "";
+	this.opacity = 0;
+	this.animateID = 0;
+}
+
+Module.prototype.drawModule = function() {
+	var $html = $(dictionary.type[this.type].html); 
+	$html.find('.title').html(this.title);
+	$html.find('.content').html(this.content);
+	this.$module.html($html);
+};
+
+Module.prototype.incrementOpacity = function(delta) {
+	this.opacity += delta;
+	this.opacity.clamp(0,1);
+	this.$module.css('opacity', this.opacity);
+
+};
+
+Module.prototype.inBound = function(currentScroll) {
+	var module2Top = this.$module.offset().top; 
+	var module2Bottom = module2Top + this.$module.height();
+	return (currentScroll >= module2Top && currentScroll <= module2Bottom);
+};
+
+Module.prototype.outOfView = function(currentScroll) {
+	return this.$module.offset().top > currentScroll + $(window).height() 
+		|| this.$module.offset().top + this.$module.height() < currentScroll;
+};
+
+Module.prototype.onScroll = function(scrollOffset) {
+};
+
+Module.prototype.resize = function() {
+};
+
+Module.prototype.animate = function() {
+	this.animateID = requestAnimationFrame(this.animate());
+};
+
+Module.prototype.stopAnimation = function(){
+	cancelAnimationFrame(this.animateID);
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~ MODULE SUBCLASSES ~~~~~~~~~~~~~~~~~~~~
+
+function Circle($module, data){
+	Module.call(this, $module, data);
+	this.degree = 0;
+	this.clockwise = true;
+	this.isLooping = true;
+	this.spinSpeed = .35;
+	this.animate();
+}
+
+Circle.prototype = Object.create(Module.prototype);
+Circle.prototype.constructor = Circle;
+
+Circle.prototype.spin = function(delta) {
+	this.degree = (this.clockwise) ? this.degree + delta : this.degree - delta; 
+	this.$module.find('.inner.circle').css("transform", "rotateZ(" + this.degree + "deg)"); 
+};
+
+Circle.prototype.jitter = function() {
+	var jitter = Math.random() - Math.random(); 
+	this.$module.find('.title').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
+};
+
+Circle.prototype.resize = function() {
+	$('.circle p').css('font-size', Math.round(.1*this.$module.find('.outer.circle-container').height()));
+};
+
+Circle.prototype.animate = function(){
+	if(this.inBound(animation.currentScroll)){
+		this.spin(this.spinSpeed)
+		this.jitter();
+	}
+	this.animateID = requestAnimationFrame(this.animate.bind(this));
+}
+
+Circle.prototype.onScroll = function(scrollOffset) {
+	this.spin(scrollOffset);
+	this.spinSpeed = (scrollOffset) ? Math.sign(scrollOffset) * Math.abs(this.spinSpeed) : this.spinSpeed;
+};
+
+function InfoBlock($module, data){
+	Module.call(this, $module, data);
+	this.translateX = 0;
+}
+
+InfoBlock.prototype = Object.create(Module.prototype);
+InfoBlock.prototype.constructor = InfoBlock;
+
+InfoBlock.prototype.incrementX = function(delta){
+	this.translationX += delta  + delta * translationX * .1;
+	this.translationX.clamp(0,200);
+}
+
+function init(){
+	animation.currentScroll = $(window).scrollTop(); 
+	animation.prevScroll = $(window).scrollTop(); 
+	var $modules = $('.module');
+	$modules.each(function(i){
+		var module;
+		switch($(this).data().type){
+			case 'circle':
+				module = new Circle($(this), $(this).data()); 
+				break;
+			case 'info-block':
+				module = new InfoBlock($(this), $(this).data()); 
+				break;
+			default: 
+				module = new Module($(this), $(this).data()); 
+		}	
+		dictionary.modules.push(module);
+		module.drawModule();
+	});
 
 	$(window).on('resize', function(){
-		circleWidth = $('#circle-container').height(); 
-		$('.circle').css('width', circleWidth); 
-		$('body').css('font-size', 43 * $(this).height()/725);
+		for(var i = 0; i < dictionary.modules.length; i++){
+			dictionary.modules[i].resize();
+		}
 	});
 
-	function incrementOpacity(delta){
-		if (opacity <= 1 && opacity >= 0){
-			opacity += delta
-		}else if(opacity > 1){
-			opacity = 1;
-		}else {
-			opacity = 0; 
-		}
-	}
-
-	function incrementTranslationX(delta){
-		if (translationX >= 0 && translationX <= 200){
-			translationX += delta  + delta * translationX * .1;
-		}
-
-		if (translationX < 0){
-			translationX = 0;
-		}else if(translationX > 200){
-			translationX = 200; 
-		}
-		
-	}
-
-	function inModuleBound($tag){
-		var moduleTop = $($tag).offset().top; 
-		var module2Bottom = module2Top + $($tag).height();
-		var headerHeight = $('.header').height(); 
-		return (currentScroll >= module2Top && currentScroll <= module2Bottom - headerHeight)
-	}
-
-	function outOfView($tag){
-		return $($tag).offset().top > currentScroll + $(window).height() || $($tag).offset().top + $($tag).height() < currentScroll;
-	}
-
-	function stickToTop($tag){
-		var leftOffset = $('.module').offset().left
-		$($tag).appendTo('body').css({
-										'position' : "fixed", 
-									    'top' : "0px", 
-									    'width' : 'calc(95vh)',
-									    'left' : leftOffset, 
-									 });
-	}
-
-	function unSticktoTop($tag, $location){
-		$($tag).prependTo($location).css({
-											'width' : "100%",
-											'position' : 'absolute',
-											'left' : "0px",
-											'top' : '0px', 
-										})
-	}
-
-	function sticktoBottom($tag, $location){
-		$($tag).prependTo($location).css({
-											'width' : "100%",
-											'position' : 'absolute',
-											'left' : '0px',
-											'bottom' : '0px',
-											'top' : 'auto', 
-										})
-	}
-
-	var degree = 0;  
-	var prevScroll, currentScroll, opacity;  
-	var clockwise = true; 
-	var inbound = true;
-	var moduleHeight = $('.module').height(); 
-	var moduleMargin = 2 * parseInt($('.module').css('margin-top')); 
-	var totalIndexes = parseInt($('body').height() / (moduleHeight + moduleMargin));
-	var translationX = 200;  
-	var module2Top = $('#second').offset().top; 
-	var module2Bottom = module2Top + $('#second').height(); 
 
 	$(window).scroll(function(){
-		inbound = false; 
-		currentScroll = $(window).scrollTop(); 
-		var currentIndex = parseInt(1.5 * currentScroll / (moduleHeight + moduleMargin)); 
-
-		var isScrollingDown = currentScroll>=prevScroll; 
-		var isScrollingUp = currentScroll<= prevScroll; 
-
-		if (isScrollingDown){
-			switch (currentIndex) {
-				case 0:
-					inbound = true; 
-					degree += 1; 
-					clockwise = true;
-					if (outOfView($('#second'))){translationX = 200; opacity = 0;}
-					break;
-				case 1:
-					inbound = true;  
-					degree += 1;
-					clockwise = true;
-					incrementTranslationX(-1);  
-					incrementOpacity(.1); 
-					if(inModuleBound($("#second"))){
-						stickToTop($('#num2')); 
-						translationX = 0;
-					}
-					break;
-				case 2:
-					incrementOpacity(-.01); 
-					incrementTranslationX(-1); 
-					if(inModuleBound($("#second"))){
-						
-					}else{
-						sticktoBottom($('#num2'), $('#second')); 
-						opacity = 1;
-					};
-					break;
-				case 3: 
-					incrementOpacity(-.01); 
-					
-					if(!inModuleBound($("#second"))){
-						sticktoBottom($('#num2'), $('#second')); 
-						opacity = 1;
-						incrementTranslationX(1.5);
-					};
-
-					break;
-			}
-		}else if(isScrollingUp){
-			switch (currentIndex) {
-				case 0:
-					inbound = true; 
-					degree -= 1; 
-					clockwise = false;
-					incrementTranslationX(1); 
-					incrementOpacity(-.03); 
-					if (outOfView($('#second'))){translationX = 200; opacity = 0;}
-					break; 
-				case 1:
-					incrementOpacity(.25); 
-					if(inModuleBound($("#second"))){
-						
-					}else{
-						unSticktoTop($('#num2'), $('#second')); 
-					};
-					break;
-				case 2:
-					incrementOpacity(.25); 
-
-					$('#second').css('opacity', opacity);
-					break; 
-				case 3:
-					if(inModuleBound($("#second"))){
-						stickToTop($('#num2'));
-						translationX = 0; 
-					}
-					incrementTranslationX(-1);
-					break;
-			}
+		animation.currentScroll = $(window).scrollTop(); 
+		//scroll up is positive, scroll down is negative
+		var scrollOffset = animation.prevScroll - animation.currentScroll; 
+		for(var i = 0; i < dictionary.modules.length; i++){
+			dictionary.modules[i].onScroll(scrollOffset);
 		}
 
-		prevScroll = currentScroll; 
-		$("#num2").css('transform','translateX(' + translationX + '%)'); 
-		$('#second').css('opacity', opacity);
-		
-		$("#num3").css({
-							'transform' : 'translateX(' + 200 - translationX + '%)',
-							'opacity' :  opacity, 
-						}); 
-
-		$('#third').css('opacity', opacity);
-
+		animation.prevScroll = animation.currentScroll; 
 	});
-
-
-	var pageOpacity = 0; 
-	function loop(){
-		if (pageOpacity >= 1) {
-			pageOpacity += .01
-			$('body').css("opacity", pageOpacity); 
-		};
-		if (inbound){
-			if(clockwise){
-				degree += .35; 
-			}else {
-				degree -= .35; 
-			};
-			var jitter = Math.random() - Math.random(); 
-			$('#inner').css("transform", "perspective(3000px) rotateZ(" + degree + "deg)"); 
-			$('#first p').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
-		}
-	
-		requestAnimationFrame(loop);
-	}
-
-	requestAnimationFrame(loop);
 }
 
 $(init);
-
-
-
-// function init(){
-
-// 	/* ~~~~~~~~~~~~~~~~~~~~~~~~ GLOBAL VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ 
-	
-// 		var moduleList = [new Module("greeter", ["Welcome!"]), new Module("info", ["About Me", "Hello! My name is Sufyan Abbasi and Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit dignissimos praesentium iusto debitis pariatur quasi velit provident, ratione distinctio qui perspiciatis incidunt asperiores vel non, molestiae, quae nam consequatur! Rerum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde laborum consequatur tempore ad incidunt odit, alias, sequi sint, sed necessitatibus laboriosam eligendi dolorum nisi voluptatem quo molestias praesentium nam facere."])];
-	
-// 		var greeterHTML = $('<div class = "module greeter"> <div class="circle-container"> <div class="circle outer"> <div class="circle-container"> <div class="circle inner"> </div> </div> <p></p> </div> </div></div>'); 
-	
-// 		var infoHTML = $('<div class = "module info"><div class = "header"></div><p></p> </div>'); 
-	
-	
-// 		function Module (typeName, attributes){
-// 			this.typeName = typeName; 
-// 			this.attributes = attributes; 
-// 		}
-	
-// 		function initializeAllModules(){
-// 			for (var i = 0; i < moduleList.length; i++){
-// 				appendModule(moduleList[i], i); 
-// 			}
-// 		}
-	
-// 		function appendModule(module, index){
-// 			switch(module.typeName) {
-// 				case "greeter":
-// 					var greet = $(greeterHTML).attr('id', index);
-// 					$('body').append(greet);
-// 					$('#' + index).children().children().children().filter("p").text(module.attributes[0]);
-// 					break; 
-// 				case "info":
-// 					var info = $(infoHTML).attr('id', index);
-// 					$('body').append(info);
-// 					$('#' + index).children().filter('.header').text(module.attributes[0])
-// 					$('#' + index).children().filter('p').text(module.attributes[1]);
-// 					break; 
-// 			}
-// 		}
-
-// 		$('body').css('font-size', 43 * $(window).height()/725);
-
-// 		var circleWidth = $('.circle-container').height(); 
-
-// 		$('.circle').css('width', circleWidth); 
-
-// 		$(window).on('resize', function(){
-
-// 			circleWidth = $('#circle-container').height(); 
-// 			$('.circle').css('width', circleWidth); 
-
-// 			$('body').css('font-size', 43 * $(this).height()/725);
-
-// 		});
-	
-// 	initializeAllModules();
-
-
-// }

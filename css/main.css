@@ -56,67 +56,62 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
-
-body {
+html,body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     background-color: #202020;
     font-size: 43px;
-    margin-top: 0px;
 }
 
 .module{
-    background-color: #191919;
     position: relative;
-    height: calc(95vh);
-    width: calc(95vh);
-    transform: translateX(-50%);
-    margin-top: 150px;
+    width: 100%;
+    height: 100%;
     left: 50%;
-    opacity: 0; 
-    overflow: hidden;
+    transform: translateX(-50%);
 }
 
-#first{
-    background-color: #202020; 
-    margin-top: 0px;
-    opacity: 1; 
-    overflow: visible;
-}
-
-
-#circle-container {
-
+.circle-container {
     position: absolute;
-    height: 95%;
-    margin: auto;
-    transform: translateY(-50%) translateX(-50%);
     top: 50%; 
     left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+}
+
+.outer.circle-container{
+    width: 80%;
+    max-width: 90vh;
+}
+
+.inner.circle-container{
+    width: 95%;
 }
 
 .circle {
     position: relative;
-    height: 100%;
+    width: 100%;
+    padding-bottom: 100%;
     border-radius: 50%; 
 }
 
-#outer{
+.outer.circle{
     background-color: rgba(0,255,156,.8); 
-    border: solid 30px rgba(255,255,255,.95);
+    border: solid 2vw rgba(255,255,255,.95);
 }
 
-#inner{
+.inner.circle{
     background-color: #202020;
+    padding-bottom: calc(100% + 3vw);
 }
 
-p {
+.circle p {
     position: absolute;
     color: white;
-    transform: translateY(-50%) translateX(-50%);
-}
-
-#first p{
-    top: 35%; 
+    top: 38%; 
     left: 50%;
+    transform: translateY(-50%) translateX(-50%);
     font-size: 2em;
 }
 
@@ -204,6 +199,118 @@ p {
 
 .clearfix {
     *zoom: 1;
+}
+/* ==========================================================================
+   Mobile styles
+   ========================================================================== */
+/* ----------- iPhone 4 and 4S ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+
+}
+
+/* Portrait */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+}
+
+/* Landscape */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+
+}
+
+/* ----------- iPhone 5 and 5S ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+
+}
+
+/* Portrait */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+}
+
+/* Landscape */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+
+}
+
+/* ----------- iPhone 6 ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2) { 
+
+}
+
+/* Portrait */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) { 
+
+}
+
+/* Landscape */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+
+}
+
+/* ----------- iPhone 6+ ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3) { 
+
+}
+
+/* Portrait */
+@media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+
+}
+
+/* Landscape */
+@media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+
 }
 
 /* ==========================================================================
