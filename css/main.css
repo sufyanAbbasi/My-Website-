@@ -44,13 +44,6 @@ textarea {
     resize: vertical;
 }
 
-.browserupgrade {
-    margin: 0.2em 0;
-    background: #ccc;
-    color: #000;
-    padding: 0.2em 0;
-}
-
 
 /* ==========================================================================
    Author's custom styles
@@ -61,16 +54,35 @@ html,body{
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #202020;
-    font-size: 43px;
+    background-color: #f1f1f1;
+    font-size: 18px;
+}
+
+a:link{
+    color: rgba(0,255,156,.8); ;
+}
+
+a:visited{
+    color: rgb(215, 68, 115);
 }
 
 .module{
     position: relative;
-    width: 100%;
-    height: 100%;
     left: 50%;
     transform: translateX(-50%);
+    overflow: hidden;
+}
+
+
+/*
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Circle Module Styling
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+.module[data-type='circle']{
+    width: 100%;
+    height: 100%;
 }
 
 .circle-container {
@@ -98,45 +110,89 @@ html,body{
 
 .outer.circle{
     background-color: rgba(0,255,156,.8); 
-    border: solid 2vw rgba(255,255,255,.95);
+    border: solid 2.5vmin rgba(100,100,100,.85);
+    border: solid 2.5vm rgba(100,100,100,.85);
 }
 
 .inner.circle{
-    background-color: #202020;
-    padding-bottom: calc(100% + 3vw);
+    background-color: rgb(210,210,210);
+    padding-bottom: calc(100% + 5vmin);
+    padding-bottom: calc(100% + 5vm);
+
 }
 
 .circle p {
     position: absolute;
-    color: white;
+    color: #333333;
     top: 38%; 
     left: 50%;
     transform: translateY(-50%) translateX(-50%);
     font-size: 2em;
 }
 
-#second p{
-    font-size: .7em;
-    width: 90%;
-    height: 90%;
-    top: 50%;
-    left: 50%;
-    margin-top: 60px;
+/*
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Info-box Module Styling
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+.module[data-type='info-box']{
+    margin: 20px 0px;
 }
 
-.header{
-    color: white;
-    position: absolute;
-    transform: translateX(200%);
-    overflow:;
-    height: 55px;
-    width: 100%;
-    left: 0px;
-    background-color: rgba(255,255,255,.2);
-    text-indent: 5px;
-    opacity: 1;
-    
+.info-container{
+    background-color: rgba(30,30,30,.75);
+    width: 90%;
+    margin: 0px 5%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
 }
+
+.header.title {
+    background-color: rgba(200,200,200,.75);
+    color: rgb(70,70,70);
+    font-size: 30px;
+    padding: 10px 0px;
+    margin-left: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: margin-left .85s ease-in-out;
+
+}
+
+.header.title:before{
+    content: '';
+    padding-right: 20px;
+}
+
+.info-container .content p{
+    font-size: 25px;
+    color: rgb(180,180,180);
+    margin: 0 20px;
+    padding: 10px 0;
+}
+
+.info-container .content > a{
+    display: inline-block;
+    background: rgba(30,30,30,.75);
+}
+
+
+.info-container .content img{
+    width: 100%;
+    display: block;
+    -webkit-transition: all 0.5s linear;
+       -moz-transition: all 0.5s linear;
+        -ms-transition: all 0.5s linear;
+         -o-transition: all 0.5s linear;
+            transition: all 0.5s linear;
+}
+
+.info-container .content a:hover img {
+    opacity: 1;
+}
+
+
 
 /* ==========================================================================
    Media Queries
@@ -203,115 +259,6 @@ html,body{
 /* ==========================================================================
    Mobile styles
    ========================================================================== */
-/* ----------- iPhone 4 and 4S ----------- */
-
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 480px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-
-}
-
-/* Portrait */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 480px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: portrait) {
-}
-
-/* Landscape */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 480px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: landscape) {
-
-}
-
-/* ----------- iPhone 5 and 5S ----------- */
-
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-
-}
-
-/* Portrait */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: portrait) {
-}
-
-/* Landscape */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: landscape) {
-
-}
-
-/* ----------- iPhone 6 ----------- */
-
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 667px) 
-  and (-webkit-min-device-pixel-ratio: 2) { 
-
-}
-
-/* Portrait */
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 667px) 
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: portrait) { 
-
-}
-
-/* Landscape */
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 667px) 
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: landscape) { 
-
-}
-
-/* ----------- iPhone 6+ ----------- */
-
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 414px) 
-  and (max-device-width: 736px) 
-  and (-webkit-min-device-pixel-ratio: 3) { 
-
-}
-
-/* Portrait */
-@media only screen 
-  and (min-device-width: 414px) 
-  and (max-device-width: 736px) 
-  and (-webkit-min-device-pixel-ratio: 3)
-  and (orientation: portrait) { 
-
-}
-
-/* Landscape */
-@media only screen 
-  and (min-device-width: 414px) 
-  and (max-device-width: 736px) 
-  and (-webkit-min-device-pixel-ratio: 3)
-  and (orientation: landscape) { 
-
-}
 
 /* ==========================================================================
    Print styles

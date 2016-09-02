@@ -11,11 +11,11 @@ var dictionary = {
 			                	'</div>' +
 			            	'</div>',
 		},
-		'info-block' : {
+		'info-box' : {
 						html : 
 								'<div class="info-container">' +
 									'<div class="header title"></div>' +
-									'<p class="content"></p>' + 
+									'<div class="content"></div>' + 
 								'</div>',
 		}
 	},
@@ -33,11 +33,14 @@ Number.prototype.clamp = function(min, max) {
 
 // ~~~~~~~~~~~~~~~~~~~~ MODULE CLASS ~~~~~~~~~~~~~~~~~~~~
 
-function Module($module, data){
+function Module($module){
 	this.$module = $module;
-	this.type = data.type || ""; 
-	this.title = data.title || ""; 
-	this.content = data.content || "";
+	this.data = $module.data();
+	this.type = this.data.type || ""; 
+	this.title = this.data.title || ""; 
+	this.content = this.data.content || "";
+	this.color = this.data.color || "rgba(0,255,156,.8)";
+	this.jqueryCache = {};
 	this.opacity = 0;
 	this.animateID = 0;
 }
@@ -47,6 +50,7 @@ Module.prototype.drawModule = function() {
 	$html.find('.title').html(this.title);
 	$html.find('.content').html(this.content);
 	this.$module.html($html);
+	this.loadJqueryCache();
 };
 
 Module.prototype.incrementOpacity = function(delta) {
@@ -57,9 +61,12 @@ Module.prototype.incrementOpacity = function(delta) {
 };
 
 Module.prototype.inBound = function(currentScroll) {
+	var currentBottom = currentScroll + $(window).height();
 	var module2Top = this.$module.offset().top; 
 	var module2Bottom = module2Top + this.$module.height();
-	return (currentScroll >= module2Top && currentScroll <= module2Bottom);
+	return (currentScroll >= module2Top && currentScroll <= module2Bottom)
+	       ||(currentBottom >= module2Top && currentBottom <= module2Bottom)
+	       ||(module2Top >= currentScroll && module2Bottom <= currentBottom);
 };
 
 Module.prototype.outOfView = function(currentScroll) {
@@ -81,33 +88,42 @@ Module.prototype.stopAnimation = function(){
 	cancelAnimationFrame(this.animateID);
 }
 
+Module.prototype.loadJqueryCache = function(){
+}
+
 
 // ~~~~~~~~~~~~~~~~~~~~ MODULE SUBCLASSES ~~~~~~~~~~~~~~~~~~~~
 
-function Circle($module, data){
-	Module.call(this, $module, data);
+function Circle($module){
+	Module.call(this, $module);
 	this.degree = 0;
 	this.clockwise = true;
 	this.isLooping = true;
 	this.spinSpeed = .35;
-	this.animate();
+	this.$module.find('.outer.circle').css('background-color', this.color);
 }
 
 Circle.prototype = Object.create(Module.prototype);
 Circle.prototype.constructor = Circle;
 
+Circle.prototype.loadJqueryCache = function(){
+	this.jqueryCache['inner-circle'] = this.$module.find('.inner.circle');
+	this.jqueryCache['title'] = this.$module.find('.title');
+	this.animate();
+}
+
 Circle.prototype.spin = function(delta) {
 	this.degree = (this.clockwise) ? this.degree + delta : this.degree - delta; 
-	this.$module.find('.inner.circle').css("transform", "rotateZ(" + this.degree + "deg)"); 
+	this.jqueryCache['inner-circle'].css("transform", "rotateZ(" + this.degree + "deg)"); 
 };
 
 Circle.prototype.jitter = function() {
 	var jitter = Math.random() - Math.random(); 
-	this.$module.find('.title').css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
+	this.jqueryCache['title'].css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
 };
 
 Circle.prototype.resize = function() {
-	$('.circle p').css('font-size', Math.round(.1*this.$module.find('.outer.circle-container').height()));
+	this.$module.find('.circle p').css('font-size', Math.round(.12*this.$module.find('.outer.circle-container').height()));
 };
 
 Circle.prototype.animate = function(){
@@ -119,21 +135,40 @@ Circle.prototype.animate = function(){
 }
 
 Circle.prototype.onScroll = function(scrollOffset) {
-	this.spin(scrollOffset);
-	this.spinSpeed = (scrollOffset) ? Math.sign(scrollOffset) * Math.abs(this.spinSpeed) : this.spinSpeed;
+	this.spinSpeed = (scrollOffset) ? -1*Math.sign(scrollOffset) * Math.abs(this.spinSpeed) : this.spinSpeed;
+	this.spin(this.spinSpeed*Math.abs(scrollOffset));
+
 };
 
-function InfoBlock($module, data){
-	Module.call(this, $module, data);
-	this.translateX = 0;
+function InfoBox($module){
+	Module.call(this, $module);
 }
 
-InfoBlock.prototype = Object.create(Module.prototype);
-InfoBlock.prototype.constructor = InfoBlock;
+InfoBox.prototype = Object.create(Module.prototype);
+InfoBox.prototype.constructor = InfoBox;
 
-InfoBlock.prototype.incrementX = function(delta){
-	this.translationX += delta  + delta * translationX * .1;
-	this.translationX.clamp(0,200);
+InfoBox.prototype.resize = function(){
+	this.$module.find('.title').css('font-size', Math.round(.06*this.$module.find('.info-container').width()).clamp(20, 40));
+	this.$module.find('.content').css('font-size', Math.round(.05*this.$module.find('.info-container').width()).clamp(20, 30));
+}
+
+InfoBox.prototype.inBound = function(currentScroll) {
+	var currentBottom = currentScroll + $(window).height();
+	var module2Top = this.$module.offset().top + this.$module.height() / 2; 
+	var module2Bottom = module2Top + this.$module.height();
+	return (currentScroll >= module2Top && currentScroll <= module2Bottom)
+	       ||(currentBottom >= module2Top && currentBottom <= module2Bottom)
+	       ||(module2Top >= currentScroll && module2Bottom <= currentBottom);
+};
+
+InfoBox.prototype.onScroll = function(scrollOffset){
+	if(this.inBound(animation.currentScroll)){
+		this.$module.find('.info-container').css('opacity','1');
+		this.$module.find('.header.title').css('margin-left','0%');
+	}else{
+		this.$module.find('.info-container').css('opacity','0');
+		this.$module.find('.header.title').css('margin-left','100%');
+	}
 }
 
 function init(){
@@ -144,16 +179,17 @@ function init(){
 		var module;
 		switch($(this).data().type){
 			case 'circle':
-				module = new Circle($(this), $(this).data()); 
+				module = new Circle($(this)); 
 				break;
-			case 'info-block':
-				module = new InfoBlock($(this), $(this).data()); 
+			case 'info-box':
+				module = new InfoBox($(this)); 
 				break;
 			default: 
-				module = new Module($(this), $(this).data()); 
+				module = new Module($(this)); 
 		}	
 		dictionary.modules.push(module);
 		module.drawModule();
+		module.resize();
 	});
 
 	$(window).on('resize', function(){
