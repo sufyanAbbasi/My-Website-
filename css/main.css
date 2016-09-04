@@ -173,25 +173,45 @@ a:visited{
 }
 
 .info-container .content > a{
+    position: relative;
     display: inline-block;
-    background: rgba(30,30,30,.75);
 }
 
 
 .info-container .content img{
+    opacity: .35;
     width: 100%;
     display: block;
-    -webkit-transition: all 0.5s linear;
-       -moz-transition: all 0.5s linear;
-        -ms-transition: all 0.5s linear;
-         -o-transition: all 0.5s linear;
-            transition: all 0.5s linear;
+    -webkit-transition: opacity 0.5s ease-in-out;
+       -moz-transition: opacity 0.5s ease-in-out;
+        -ms-transition: opacity 0.5s ease-in-out;
+         -o-transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
 }
 
 .info-container .content a:hover img {
     opacity: 1;
 }
 
+.info-container .content a:hover .text-overlay {
+    opacity: 0;
+}
+
+.text-overlay{
+    position: absolute;
+    width: 100%;
+    font-size: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    color: white;
+    text-decoration: underline;
+     -webkit-transition: opacity 0.5s ease-in-out;
+        -moz-transition: opacity 0.5s ease-in-out;
+         -ms-transition: opacity 0.5s ease-in-out;
+          -o-transition: opacity 0.5s ease-in-out;
+             transition: opacity 0.5s ease-in-out;
+}
 
 
 /* ==========================================================================
