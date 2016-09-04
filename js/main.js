@@ -149,12 +149,12 @@ InfoBox.prototype.constructor = InfoBox;
 
 InfoBox.prototype.resize = function(){
 	this.$module.find('.title').css('font-size', Math.round(.06*this.$module.find('.info-container').width()).clamp(20, 40));
-	this.$module.find('.content').css('font-size', Math.round(.05*this.$module.find('.info-container').width()).clamp(20, 30));
+	this.$module.find('.content p').css('font-size', Math.round(.045*this.$module.find('.info-container').width()).clamp(20, 30));
 }
 
 InfoBox.prototype.inBound = function(currentScroll) {
 	var currentBottom = currentScroll + $(window).height();
-	var module2Top = this.$module.offset().top + this.$module.height() / 2; 
+	var module2Top = this.$module.offset().top + (this.$module.height()/4); 
 	var module2Bottom = module2Top + this.$module.height();
 	return (currentScroll >= module2Top && currentScroll <= module2Bottom)
 	       ||(currentBottom >= module2Top && currentBottom <= module2Bottom)
