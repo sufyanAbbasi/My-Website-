@@ -1,4 +1,3 @@
-
 var dictionary = {
 	type: {
 		'circle' : {
@@ -8,6 +7,7 @@ var dictionary = {
 				                        '<div class="inner circle"></div>' +
 				                    '</div>' +
 			                    	'<p class="title"></p>' +
+			                    	'<p class="content"></p>' +
 			                	'</div>' +
 			            	'</div>',
 		},
@@ -31,7 +31,7 @@ Number.prototype.clamp = function(min, max) {
   return Math.min(Math.max(this, min), max);
 };
 
-// ~~~~~~~~~~~~~~~~~~~~ MODULE CLASS ~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~ Module Class ~~~~~~~~~~~~~~~~~~~~
 
 function Module($module){
 	this.$module = $module;
@@ -92,14 +92,15 @@ Module.prototype.loadJqueryCache = function(){
 }
 
 
-// ~~~~~~~~~~~~~~~~~~~~ MODULE SUBCLASSES ~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~ Module Subclasses ~~~~~~~~~~~~~~~~~~~~
 
 function Circle($module){
 	Module.call(this, $module);
 	this.degree = 0;
 	this.clockwise = true;
 	this.isLooping = true;
-	this.spinSpeed = .35;
+	this.spinSpeed = .5;
+	this.jitterScaler = .65;
 	this.$module.find('.outer.circle').css('background-color', this.color);
 }
 
@@ -109,6 +110,7 @@ Circle.prototype.constructor = Circle;
 Circle.prototype.loadJqueryCache = function(){
 	this.jqueryCache['inner-circle'] = this.$module.find('.inner.circle');
 	this.jqueryCache['title'] = this.$module.find('.title');
+	this.jqueryCache['content'] = this.$module.find('.content');
 	this.animate();
 }
 
@@ -118,12 +120,13 @@ Circle.prototype.spin = function(delta) {
 };
 
 Circle.prototype.jitter = function() {
-	var jitter = Math.random() - Math.random(); 
+	var jitter = (Math.random() - Math.random()) * this.jitterScaler; 
 	this.jqueryCache['title'].css("transform", "translateX(-50%) translateY("+ (-50 + jitter) +"%)");
 };
 
 Circle.prototype.resize = function() {
-	this.$module.find('.circle p').css('font-size', Math.round(.12*this.$module.find('.outer.circle-container').height()));
+	this.$module.find('.circle .title').css('font-size', Math.round(.12*this.$module.find('.outer.circle-container').height()));
+	this.$module.find('.circle .content').css('font-size', Math.round(.06*this.$module.find('.outer.circle-container').height()));
 };
 
 Circle.prototype.animate = function(){
@@ -155,7 +158,7 @@ InfoBox.prototype.resize = function(){
 
 InfoBox.prototype.inBound = function(currentScroll) {
 	var currentBottom = currentScroll + $(window).height();
-	var module2Top = this.$module.offset().top + (this.$module.height()/4); 
+	var module2Top = this.$module.offset().top + (window.innerHeight/4); 
 	var module2Bottom = module2Top + this.$module.height();
 	return (currentScroll >= module2Top && currentScroll <= module2Bottom)
 	       ||(currentBottom >= module2Top && currentBottom <= module2Bottom)
@@ -169,6 +172,15 @@ InfoBox.prototype.onScroll = function(scrollOffset){
 	}else{
 		this.$module.find('.info-container').css('opacity','0');
 		this.$module.find('.header.title').css('margin-left','100%');
+	}
+}
+
+// ~~~~~~~~~~~~~~~~~~~~ Init + Helpers ~~~~~~~~~~~~~~~~~~~~
+
+function processHash(){
+	var hash = window.location.hash.slice(1)
+	if(hash && $('[name='+hash+']').length){
+		scrollToElmMiddle($('[name='+hash+']'))
 	}
 }
 
@@ -210,6 +222,9 @@ function init(){
 
 		animation.prevScroll = animation.currentScroll; 
 	});
+
+	setTimeout(processHash, 500);
+	window.onhashchange = processHash;
 }
 
 $(init);
