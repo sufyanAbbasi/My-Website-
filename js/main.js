@@ -31,19 +31,52 @@ Number.prototype.clamp = function(min, max) {
   return Math.min(Math.max(this, min), max);
 };
 
-// ~~~~~~~~~~~~~~~~~~~~ Module Class ~~~~~~~~~~~~~~~~~~~~
+function load(url, responseType) {
+  return new Promise(function(resolve, reject){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url);
+      xhr.responseType = responseType;
+      xhr.onload = function() {
+        if(xhr.status == 200){
+            resolve(this.response);
+        }else{
+            reject(Error(xhr.statusText));
+        }
+      };
+      // Handle network errors
+      xhr.onerror = function() {
+        reject(Error("Network Error"));
+      };
+      xhr.send();
+  }); 
+}
 
+// ~~~~~~~~~~~~~~~~~~~~ Module Class ~~~~~~~~~~~~~~~~~~~~
 function Module($module){
 	this.$module = $module;
 	this.data = $module.data();
 	this.type = this.data.type || ""; 
-	this.title = this.data.title || ""; 
-	this.content = this.data.content || "";
+	this.title = this.data.title || "";
+	this.name = $module.attr('name') || "_error_";
+	this.content = "";
 	this.color = this.data.color || "rgba(0,255,156,.8)";
 	this.jqueryCache = {};
 	this.opacity = 0;
 	this.animateID = 0;
 }
+
+Module.prototype.loadModule = function() {
+	return new Promise((function (resolve, reject){
+		load('content/' + this.name + '.html', 'text').then((function(data){
+			this.content = data;
+			resolve(this);
+		}).bind(this)).catch((function(err){
+			console.error(err);
+			this.content = "This module failed to load properly.";
+			reject(this);
+		}).bind(this));
+	}).bind(this));
+};
 
 Module.prototype.drawModule = function() {
 	var $html = $(dictionary.type[this.type].html); 
@@ -51,13 +84,7 @@ Module.prototype.drawModule = function() {
 	$html.find('.content').html(this.content);
 	this.$module.html($html);
 	this.loadJqueryCache();
-};
-
-Module.prototype.incrementOpacity = function(delta) {
-	this.opacity += delta;
-	this.opacity.clamp(0,1);
-	this.$module.css('opacity', this.opacity);
-
+	this.resize();
 };
 
 Module.prototype.inBound = function(currentScroll) {
@@ -75,6 +102,9 @@ Module.prototype.outOfView = function(currentScroll) {
 };
 
 Module.prototype.onScroll = function(scrollOffset) {
+	var inView = this.inBound(animation.currentScroll);
+	this.$module.addClass(inView ? 'in' : 'out');
+	this.$module.removeClass(inView ? 'out' : 'in');
 };
 
 Module.prototype.resize = function() {
@@ -140,7 +170,6 @@ Circle.prototype.animate = function(){
 Circle.prototype.onScroll = function(scrollOffset) {
 	this.spinSpeed = (scrollOffset) ? -1*Math.sign(scrollOffset) * Math.abs(this.spinSpeed) : this.spinSpeed;
 	this.spin(this.spinSpeed*Math.abs(scrollOffset));
-
 };
 
 function InfoBox($module){
@@ -165,16 +194,6 @@ InfoBox.prototype.inBound = function(currentScroll) {
 	       ||(module2Top >= currentScroll && module2Bottom <= currentBottom);
 };
 
-InfoBox.prototype.onScroll = function(scrollOffset){
-	if(this.inBound(animation.currentScroll)){
-		this.$module.find('.info-container').css('opacity','1');
-		this.$module.find('.header.title').css('margin-left','0%');
-	}else{
-		this.$module.find('.info-container').css('opacity','0');
-		this.$module.find('.header.title').css('margin-left','100%');
-	}
-}
-
 // ~~~~~~~~~~~~~~~~~~~~ Init + Helpers ~~~~~~~~~~~~~~~~~~~~
 
 function processHash(){
@@ -184,10 +203,9 @@ function processHash(){
 	}
 }
 
-function init(){
-	animation.currentScroll = $(window).scrollTop(); 
-	animation.prevScroll = $(window).scrollTop(); 
+function loadModules(){
 	var $modules = $('.module');
+	var modulePromises = []
 	$modules.each(function(i){
 		var module;
 		switch($(this).data().type){
@@ -201,9 +219,22 @@ function init(){
 				module = new Module($(this)); 
 		}	
 		dictionary.modules.push(module);
-		module.drawModule();
+		modulePromises.push(module.loadModule());
 		module.resize();
 	});
+
+	Promise.all(modulePromises).then(function(modules){
+		for(var i in modules){
+			modules[i].drawModule();
+		}
+	})
+}
+
+function init(){
+	animation.currentScroll = $(window).scrollTop(); 
+	animation.prevScroll = $(window).scrollTop(); 
+	
+	loadModules();
 
 	$(window).on('resize', function(){
 		for(var i = 0; i < dictionary.modules.length; i++){

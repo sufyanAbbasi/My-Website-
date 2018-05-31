@@ -66,13 +66,18 @@ a:visited{
     color: rgb(255, 83, 138);
 }
 
+/*
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Base Module Styling
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
 .module{
     position: relative;
     left: 50%;
     transform: translateX(-50%);
     overflow: hidden;
 }
-
 
 /*
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,8 +98,7 @@ a:visited{
 }
 
 .outer.circle-container{
-    width: 80%;
-    max-width: 90vh;
+    width: 90vmin;
 }
 
 .inner.circle-container{
@@ -111,13 +115,13 @@ a:visited{
 .outer.circle{
     background-color: rgba(0,255,156,.8); 
     border: solid 2.5vmin rgba(100,100,100,.85);
-    border: solid 2.5vm rgba(100,100,100,.85);
+    border: solid 2.5vmin rgba(100,100,100,.85);
 }
 
 .inner.circle{
     background-color: rgb(210,210,210);
     padding-bottom: calc(100% + 5vmin);
-    padding-bottom: calc(100% + 5vm);
+    padding-bottom: calc(100% + 5vmin);
 
 }
 
@@ -150,15 +154,32 @@ a:visited{
 }
 
 .info-container{
-    background-color: rgb(50,50,50);
+    background-color: rgba(0,0,0,0.8);
     width: 90%;
     margin: 0px 5%;
+    opacity: 1;
+    transition: opacity 1.3s ease-in-out;
+    color: rgba(255,255,255,.8);
+}
+
+.in .info-container{
+    opacity: 1;
+}
+
+.out .info-container{
     opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+}
+
+.in .header.title{
+    margin-left: 0%;
+}
+
+.out .header.title{
+    margin-left: 100%;
 }
 
 .header.title {
-    background-color: rgba(200,200,200,.75);
+    background-color: rgba(255,255,255,.75);
     color: rgb(70,70,70);
     font-size: 30px;
     padding: 10px 0px;
@@ -166,7 +187,6 @@ a:visited{
     white-space: nowrap;
     overflow: hidden;
     transition: margin-left .85s ease-in-out;
-
 }
 
 .header.title:before{
@@ -176,7 +196,6 @@ a:visited{
 
 .info-container .content p{
     font-size: 25px;
-    color: rgb(180,180,180);
     margin: 0 20px;
     padding: 10px 0;
 }
@@ -191,7 +210,6 @@ a:visited{
     display: block;
     width: 100%;
     margin: 0 auto;
-    opacity: .35;
     -webkit-transition: opacity 0.5s ease-in-out;
        -moz-transition: opacity 0.5s ease-in-out;
         -ms-transition: opacity 0.5s ease-in-out;
@@ -199,12 +217,16 @@ a:visited{
             transition: opacity 0.5s ease-in-out;
 }
 
-.info-container .content a:hover img {
+.info-container .content .dark-img{
+    opacity: .35;
+}
+
+.info-container .content a:hover .dark-img {
     opacity: 1;
 }
 
 .info-container .content a:hover .text-overlay {
-    opacity: 0;
+    opacity: .5;
 }
 
 .text-overlay{
