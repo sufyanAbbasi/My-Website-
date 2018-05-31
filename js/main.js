@@ -130,7 +130,7 @@ function Circle($module){
 	this.clockwise = true;
 	this.isLooping = true;
 	this.spinSpeed = .5;
-	this.jitterScaler = .65;
+	this.jitterScaler = .75;
 	this.$module.find('.outer.circle').css('background-color', this.color);
 }
 

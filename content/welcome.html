@@ -1,4 +1,20 @@
-<span style='position: absolute; 
-transform: translateY(-50%)
-translateX(-50%)
-scale(1, -1);'>&#8682;</span>
+<style type="text/css">
+	@keyframes downarrow {
+	    0%   {transform: translateY(-50%) translateX(-50%) scale(1, -1);}
+	    50%  {transform: translateY(-30%) translateX(-50%) scale(1, -1);}
+	    100% {transform: translateY(-50%) translateX(-50%) scale(1, -1);}
+	}
+
+	.down-arrow {
+	    animation-name: downarrow;
+	    animation-duration: 2s;
+	    animation-iteration-count: infinite;
+	    animation-direction: alternate;
+	    animation-timing-function: ease-in-out;
+	}
+	.down-arrow:after{
+		content: '⇪';
+	}
+</style>
+
+<span class='down-arrow' style='position: absolute;'></span>
