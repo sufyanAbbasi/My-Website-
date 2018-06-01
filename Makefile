@@ -1,4 +1,4 @@
 clean:
-    rm .DS_Store
+	rm .DS_Store
 publish:
-    gsutil rsync -modr ./ gs://www.sufy.me
+	gsutil -m rsync -d -r ./ gs://www.sufy.me
