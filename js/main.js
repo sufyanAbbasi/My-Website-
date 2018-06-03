@@ -181,7 +181,7 @@ InfoBox.prototype.constructor = InfoBox;
 
 InfoBox.prototype.resize = function(){
 	this.$module.find('.title').css('font-size', Math.round(.06*this.$module.find('.info-container').width()).clamp(20, 40));
-	this.$module.find('.content p').css('font-size', Math.round(.045*this.$module.find('.info-container').width()).clamp(20, 30));
+	this.$module.find('.content p').css('font-size', Math.round(.035*this.$module.find('.info-container').width()).clamp(20, 30));
 	this.$module.find('.text-overlay').css('font-size', Math.round(.06*this.$module.find('.info-container').width()).clamp(20, 40));
 }
 

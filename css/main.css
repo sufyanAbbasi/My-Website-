@@ -194,7 +194,8 @@ a:visited{
 
 .info-container{
     background-color: rgba(0,0,0,0.8);
-    width: 95%;
+    width: 90%;
+    max-width: 960px;
     margin: 0px auto;
     opacity: 1;
     transition: opacity 1.3s ease-in-out;
